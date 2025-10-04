@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой игровой сайт</title>
+    <style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .game-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .game-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .game-card-content {
+            padding: 1.5rem;
+        }
+        .game-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .game-card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .play-button {
+            display: inline-block;
+            background: #6e8efb;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .play-button:hover {
+            background: #5a7dfa;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            color: #7f8c8d;
+            border-top: 1px solid #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Добро пожаловать в мир игр!</h1>
+        <p>Выберите игру и начинайте играть прямо сейчас</p>
+    </header>
+
+    <div class="container">
+        <div class="game-grid">
+            <!-- Карточка игры "Змейка" -->
+            <div class="game-card">
+                <!-- Можно добавить скриншот игры -->
+                <div style="background: #2ecc71; height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                    🐍 Змейка
+                </div>
+                <div class="game-card-content">
+                    <h3>Классическая Змейка</h3>
+                    <p>Управляйте змейкой, собирайте еду и становитесь длиннее. Старайтесь не врезаться в стены и в себя!</p>
+                    <a href="snake.html" class="play-button">Играть</a>
+                </div>
+            </div>
+
+            <!-- Заготовка для будущей игры -->
+            <div class="game-card">
+                <div style="background: #e74c3c; height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                    🎮 Скоро...
+                </div>
+                <div class="game-card-content">
+                    <h3>Неизвестно</h3>
+                    <p>Пока что здесь ничего нет! Новая игра появится через некоторое время!</p>
+                    <a href="#" class="play-button">Скоро</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Мой игровой сайт. Все игры созданы с любовью!</p>
+    </footer>
+</body>
+</html>

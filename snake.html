@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Змейка - Классическая игра</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom right, #1a2a6c, #b21f1f, #fdbb2d);
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .game-container {
+            position: relative;
+        }
+        canvas {
+            border: 3px solid #fff;
+            border-radius: 10px;
+            background-color: #2ecc71;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            width: 406px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #2980b9;
+        }
+        button:hover {
+            background: #5dade2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2980b9;
+        }
+        #pauseMenu {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            z-index: 100;
+        }
+        #pauseMenu h2 {
+            margin-top: 0;
+        }
+        .menu-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .start-message {
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+        }
+/* Стили для кнопки "Назад" */
+        .back-button {
+            position: fixed; /* Фиксированное положение на экране */
+            top: 20px; /* Отступ сверху */
+            left: 20px; /* Отступ слева */
+            background: rgba(52, 152, 219, 0.9); /* Цвет фона с прозрачностью */
+            color: white; /* Цвет текста */
+            border: none; /* Убираем стандартную рамку */
+            padding: 10px 20px; /* Внутренние отступы */
+            border-radius: 25px; /* Закругленные углы */
+            cursor: pointer; /* Курсор-указатель при наведении */
+            font-weight: bold; /* Жирный шрифт */
+            text-decoration: none; /* Убираем подчеркивание */
+            box-shadow: 0 4px 0 #2980b9; /* Тень для эффекта объема */
+            transition: all 0.3s ease; /* Плавные переходы */
+            z-index: 1000; /* Чтобы кнопка была поверх других элементов */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Шрифт */
+        }
+
+        /* Стили при наведении на кнопку */
+        .back-button:hover {
+            background: rgba(41, 128, 185, 0.9); /* Темнее при наведении */
+            transform: translateY(-2px); /* Слегка приподнимаем */
+            box-shadow: 0 6px 0 #2471a3; /* Увеличиваем тень */
+        }
+
+        /* Стили при нажатии на кнопку */
+        .back-button:active {
+            transform: translateY(2px); /* Опускаем при нажатии */
+            box-shadow: 0 2px 0 #2471a3; /* Уменьшаем тень */
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← На главную</a>
+
+    <div class="game-header">
+        <h1>🐍 Змейка</h1>
+    </div>
+
+    <div class="info-panel">
+        <div id="score">Длина: 1 / 400</div>
+        <div id="status">Ждем начала...</div>
+    </div>
+
+    <div class="game-container">
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        
+        <div id="pauseMenu">
+            <h2>Пауза</h2>
+            <p>Игра приостановлена</p>
+            <div class="menu-buttons">
+                <button onclick="restartGame()">Начать заново</button>
+                <button onclick="continueGame()">Продолжить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="pauseGame()">Пауза</button>
+        <button onclick="restartGame()">Рестарт</button>
+    </div>
+
+    <div class="start-message" id="startMessage">Нажмите любую стрелку для начала игры</div>
+
+    <script>
+        // Инициализация основных переменных
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const box = 20;
+        const gridSize = canvas.width / box;
+        const maxLength = gridSize * gridSize;
+        
+        let snake = [];
+        let direction = '';
+        let food = {};
+        let scoreElement = document.getElementById('score');
+        let statusElement = document.getElementById('status');
+        let startMessage = document.getElementById('startMessage');
+        let pauseMenu = document.getElementById('pauseMenu');
+        let gameStarted = false;
+        let gamePaused = false;
+        let game;
+
+        // Инициализация игры
+        function initGame() {
+            snake = [{ x: 9 * box, y: 9 * box }];
+            direction = '';
+            food = generateFood();
+            gameStarted = false;
+            gamePaused = false;
+            startMessage.style.display = 'block';
+            statusElement.textContent = 'Ждем начала...';
+            drawStatic();
+        }
+
+        // Функция отрисовки статичного состояния (до начала игры)
+        function drawStatic() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Отрисовка змейки
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i === 0) ? '#2E8B57' : '#32CD32';
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                ctx.strokeStyle = '#228B22';
+                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            // Отрисовка еды
+            ctx.fillStyle = '#DC143C';
+            ctx.fillRect(food.x, food.y, box, box);
+            ctx.strokeStyle = '#8B0000';
+            ctx.strokeRect(food.x, food.y, box, box);
+        }
+
+        // Функция генерации еды
+        function generateFood() {
+            let newFood;
+            let isOnSnake;
+            
+            do {
+                isOnSnake = false;
+                newFood = {
+                    x: Math.floor(Math.random() * gridSize) * box,
+                    y: Math.floor(Math.random() * gridSize) * box
+                };
+                
+                for (let segment of snake) {
+                    if (segment.x === newFood.x && segment.y === newFood.y) {
+                        isOnSnake = true;
+                        break;
+                    }
+                }
+            } while (isOnSnake);
+            
+            return newFood;
+        }
+
+        // Функция запуска игры
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true;
+                startMessage.style.display = 'none';
+                statusElement.textContent = 'Игра идет...';
+                game = setInterval(draw, 100);
+            }
+        }
+
+        // Основная функция отрисовки
+        function draw() {
+            if (!gameStarted || gamePaused) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Отрисовка змейки
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i === 0) ? '#2E8B57' : '#32CD32';
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                ctx.strokeStyle = '#228B22';
+                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            // Отрисовка еды
+            ctx.fillStyle = '#DC143C';
+            ctx.fillRect(food.x, food.y, box, box);
+            ctx.strokeStyle = '#8B0000';
+            ctx.strokeRect(food.x, food.y, box, box);
+
+            // Перемещение змейки
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (direction === 'up') snakeY -= box;
+            if (direction === 'down') snakeY += box;
+            if (direction === 'left') snakeX -= box;
+            if (direction === 'right') snakeX += box;
+
+            const newHead = { x: snakeX, y: snakeY };
+
+            // Проверка условий завершения игры
+            const hitWall = snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height;
+            const fieldFull = snake.length >= maxLength;
+
+            if (hitWall || fieldFull || collide(newHead, snake)) {
+                clearInterval(game);
+                let message = '';
+                if (hitWall) message = 'Игра окончена! Змейка врезалась в стену.';
+                else if (fieldFull) message = 'Поздравляем! Вы заполнили всё поле!';
+                else message = 'Игра окончена! Змейка врезалась в себя.';
+                
+                alert(message + '\nДлина змейки: ' + snake.length);
+                initGame();
+                return;
+            }
+
+            // Проверка на съедание еды
+            if (snakeX === food.x && snakeY === food.y) {
+                food = generateFood();
+            } else {
+                snake.pop();
+            }
+
+            snake.unshift(newHead);
+            scoreElement.textContent = `Длина: ${snake.length} / ${maxLength}`;
+        }
+
+        // Функция проверки столкновения
+        function collide(head, body) {
+            for (let i = 1; i < body.length; i++) {
+                if (head.x === body[i].x && head.y === body[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Функции управления игрой
+        function pauseGame() {
+            if (!gameStarted) return;
+            gamePaused = true;
+            pauseMenu.style.display = 'block';
+            statusElement.textContent = 'Пауза...';
+        }
+
+        function continueGame() {
+            if (!gameStarted) return;
+            gamePaused = false;
+            pauseMenu.style.display = 'none';
+            statusElement.textContent = 'Игра идет...';
+        }
+
+        function restartGame() {
+            clearInterval(game);
+            initGame();
+            pauseMenu.style.display = 'none';
+        }
+
+        // Обработка нажатий клавиш
+        document.addEventListener('keydown', (event) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                if (!gameStarted) {
+                    startGame();
+                }
+                if (event.key === 'ArrowUp' && direction !== 'down') direction = 'up';
+                else if (event.key === 'ArrowDown' && direction !== 'up') direction = 'down';
+                else if (event.key === 'ArrowLeft' && direction !== 'right') direction = 'left';
+                else if (event.key === 'ArrowRight' && direction !== 'left') direction = 'right';
+            }
+            
+            // Пауза на пробел
+            if (event.key === ' ' && gameStarted) {
+                if (gamePaused) {
+                    continueGame();
+                } else {
+                    pauseGame();
+                }
+            }
+        });
+
+        // Инициализация игры при загрузке
+        window.onload = initGame;
+    </script>
+</body>
+</html>
